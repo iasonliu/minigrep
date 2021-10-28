@@ -8,57 +8,22 @@ on:
 jobs:
   publish:
     name: Publish for ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    # Runs when the commit message contains "[Released]"
-    # if: "contains(github.event.head_commit.message, '[Released]')"
+        include:
+          - target: x86_64-pc-windows-gnu
+            archive: zip
+          - target: x86_64-unknown-linux-musl
+            archive: tar.gz tar.xz
+          - target: x86_64-apple-darwin
+            archive: zip
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-
-      - name: Build
-        run: cargo build --release --locked
-
-      # Condition to only run this whenever the runner os is Mac
-      - name: Build Release Mac
-        if: matrix.os == 'macos-latest'
-        run: |
-          strip target/release/minigrep
-          mkdir -p release
-          tar -C ./target/release/ -czvf ./release/minigrep-mac.tar.gz ./minigrep
-
-      # Condition to only run this whenever the runner os is Ubuntu
-      - name: Build Release Linux
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          cargo install cargo-deb
-          cargo deb
-          strip target/release/minigrep
-          mkdir -p release
-          mv target/debian/*.deb ./release/minigrep-linux.deb
-
-      # Condition to only run this whenever the runner os is Windows
-      - name: Build Release Win
-        if: matrix.os == 'windows-latest'
-        run: |
-          mkdir -p release
-          tar -C ./target/release/ -czvf ./release/minigrep-win.tar.gz ./minigrep.exe
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: true
-          files: |
-            ./release/*.tar.gz
-            ./release/*.zip
-            ./release/*.deb
+      - uses: actions/checkout@master
+      - name: Compile and release
+        uses: rust-build/rust-build.action@latest
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # You don't need to add this in secrets it's by default.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUSTTARGET: ${{ matrix.target }}
+          ARCHIVE_TYPES: ${{ matrix.archive }}
