@@ -53,13 +53,22 @@ jobs:
           override: true
       - name: Cache
         uses: Swatinem/rust-cache@v1
-      - name: Run cargo test --no-run
+      - name: Run cargo test
         uses: actions-rs/cargo@v1
         with:
-          command: test --no-run
+          command: test
       - name: Run cargo test
         uses: actions-rs/cargo@v1
         env:
           RUST_TEST_THREADS: 1
         with:
           command: test
+  build:
+    name: Run Build for Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --all-features
