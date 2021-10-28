@@ -42,7 +42,7 @@ jobs:
           strip target/release/minigrep
           mkdir -p release
           mv target/debian/*.deb ./release/minigrep-linux.deb
-          tar -C ./target/release/ -czvf ./release/minigrep-linux.tar.gz ./minigrep
+          tar -C ./target/release/ -czvf ./release/minigrep-linux.tar.gz ./minigrep-linux.deb
 
       # Condition to only run this whenever the runner os is Windows
       - name: Build Release Win

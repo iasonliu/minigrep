@@ -1,3 +1,5 @@
+name: BUILD
+
 on:
   push:
     paths-ignore:
@@ -6,8 +8,6 @@ on:
     paths-ignore:
       - "**.md"
   workflow_dispatch:
-
-name: BUILD
 
 env:
   RUST_TOOLCHAIN: stable
