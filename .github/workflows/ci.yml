@@ -77,6 +77,8 @@ jobs:
           profile: ${{ env.TOOLCHAIN_PROFILE }}
           toolchain: ${{ env.RUST_TOOLCHAIN }}
           override: true
+      - name: Cache
+        uses: Swatinem/rust-cache@v1
       - name: Release build
         uses: actions-rs/cargo@v1
         with:
