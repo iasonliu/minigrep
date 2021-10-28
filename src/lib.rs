@@ -1,6 +1,6 @@
+use std::env;
 use std::error::Error;
 use std::fs;
-use std::env;
 
 pub struct Config {
     pub query: String,
@@ -17,7 +17,11 @@ impl Config {
         let filename = args[2].clone();
         let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
 
-        Ok(Config { query, filename, case_sensitive})
+        Ok(Config {
+            query,
+            filename,
+            case_sensitive,
+        })
     }
 }
 
